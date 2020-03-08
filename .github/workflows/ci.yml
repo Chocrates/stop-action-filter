@@ -23,4 +23,4 @@ jobs:
     - uses: actions/checkout@v1
     - uses: ./
       with: 
-        filter: 'eventName == "bug"'
+        filter: 'eventName == "push"'
