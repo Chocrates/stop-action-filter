@@ -23,6 +23,6 @@ jobs:
     - uses: actions/checkout@v1
     - uses: ./
       with: 
-        filter: 'eventName == "pushss"'
+        filter: 'eventName == "push"'
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
