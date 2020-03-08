@@ -513,64 +513,6 @@ module.exports = windowsRelease;
 
 /***/ }),
 
-/***/ 58:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-/* globals atob, btoa, crypto */
-/* istanbul ignore file */
-
-const bytes = __webpack_require__(101)
-
-bytes.from = (_from, _encoding) => {
-  if (_from instanceof DataView) return _from
-  if (_from instanceof ArrayBuffer) return new DataView(_from)
-  let buffer
-  if (typeof _from === 'string') {
-    if (!_encoding) {
-      _encoding = 'utf-8'
-    } else if (_encoding === 'base64') {
-      buffer = Uint8Array.from(atob(_from), c => c.charCodeAt(0)).buffer
-      return new DataView(buffer)
-    }
-    if (_encoding !== 'utf-8') throw new Error('Browser support for encodings other than utf-8 not implemented')
-    return new DataView((new TextEncoder()).encode(_from).buffer)
-  } else if (typeof _from === 'object') {
-    if (ArrayBuffer.isView(_from)) {
-      if (_from.byteLength === _from.buffer.byteLength) return new DataView(_from.buffer)
-      else return new DataView(_from.buffer, _from.byteOffset, _from.byteLength)
-    }
-  }
-  throw new Error('Unkown type. Cannot convert to ArrayBuffer')
-}
-
-bytes.toString = (_from, encoding) => {
-  _from = bytes(_from, encoding)
-  const uint = new Uint8Array(_from.buffer, _from.byteOffset, _from.byteLength)
-  const str = String.fromCharCode(...uint)
-  if (encoding === 'base64') {
-    /* would be nice to find a way to do this directly from a buffer
-     * instead of doing two string conversions
-     */
-    return btoa(str)
-  } else {
-    return str
-  }
-}
-
-bytes.native = (_from, encoding) => {
-  if (_from instanceof Uint8Array) return _from
-  _from = bytes.from(_from, encoding)
-  return new Uint8Array(_from.buffer, _from.byteOffset, _from.byteLength)
-}
-
-if (process.browser) bytes._randomFill = (...args) => crypto.getRandomValues(...args)
-
-module.exports = bytes
-
-
-/***/ }),
-
 /***/ 82:
 /***/ (function(module) {
 
@@ -641,102 +583,6 @@ module.exports = js;
 /***/ (function(module) {
 
 module.exports = require("os");
-
-/***/ }),
-
-/***/ 101:
-/***/ (function(module) {
-
-"use strict";
-
-
-const length = (a, b) => {
-  if (a.byteLength === b.byteLength) return a.byteLength
-  else if (a.byteLength > b.byteLength) return a.byteLength
-  return b.byteLength
-}
-
-const bytes = (_from, encoding) => bytes.from(_from, encoding)
-
-bytes.sorter = (a, b) => {
-  a = bytes(a)
-  b = bytes(b)
-  const len = length(a, b)
-  let i = 0
-  while (i < (len - 1)) {
-    if (i >= a.byteLength) return 1
-    else if (i >= b.byteLength) return -1
-
-    if (a.getUint8(i) < b.getUint8(i)) return -1
-    else if (a.getUint8(i) > b.getUint8(i)) return 1
-    i++
-  }
-  return 0
-}
-
-bytes.compare = (a, b) => !bytes.sorter(a, b)
-bytes.memcopy = (_from, encoding) => {
-  const b = bytes(_from, encoding)
-  return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)
-}
-bytes.arrayBuffer = (_from, encoding) => {
-  _from = bytes(_from, encoding)
-  if (_from.buffer.byteLength === _from.byteLength) return _from.buffer
-  return _from.buffer.slice(_from.byteOffset, _from.byteOffset + _from.byteLength)
-}
-const sliceOptions = (_from, start = 0, end = null) => {
-  _from = bytes(_from)
-  end = (end === null ? _from.byteLength : end) - start
-  return [_from.buffer, _from.byteOffset + start, end]
-}
-bytes.slice = (_from, start, end) => new DataView(...sliceOptions(_from, start, end))
-
-bytes.memcopySlice = (_from, start, end) => {
-  const [buffer, offset, length] = sliceOptions(_from, start, end)
-  return buffer.slice(offset, length + offset)
-}
-bytes.typedArray = (_from, _Class = Uint8Array) => {
-  _from = bytes(_from)
-  return new _Class(_from.buffer, _from.byteOffset, _from.byteLength / _Class.BYTES_PER_ELEMENT)
-}
-
-bytes.concat = (_from) => {
-  _from = Array.from(_from)
-  _from = _from.map(b => bytes(b))
-  const length = _from.reduce((x, y) => x + y.byteLength, 0)
-  const ret = new Uint8Array(length)
-  let i = 0
-  for (const part of _from) {
-    const view = bytes.typedArray(part)
-    ret.set(view, i)
-    i += view.byteLength
-  }
-  return ret.buffer
-}
-
-const maxEntropy = 65536
-
-bytes.random = length => {
-  const ab = new ArrayBuffer(length)
-  if (length > maxEntropy) {
-    let i = 0
-    while (i < ab.byteLength) {
-      let len
-      if (i + maxEntropy > ab.byteLength) len = ab.byteLength - i
-      else len = maxEntropy
-      const view = new Uint8Array(ab, i, len)
-      i += maxEntropy
-      bytes._randomFill(view)
-    }
-  } else {
-    const view = new Uint8Array(ab)
-    bytes._randomFill(view)
-  }
-  return ab
-}
-
-module.exports = bytes
-
 
 /***/ }),
 
@@ -1790,7 +1636,6 @@ const core = __importStar(__webpack_require__(470));
 const github_1 = __webpack_require__(469);
 const pegjs = __importStar(__webpack_require__(910));
 const fs = __importStar(__webpack_require__(747));
-const bent = __webpack_require__(231); // eslint-disable-line @typescript-eslint/no-require-imports
 function handleError(error) {
     core.debug(error.message);
     core.debug(error.stack || '');
@@ -1803,6 +1648,10 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const filter = core.getInput('filter');
         try {
+            if (!process.env.GITHUB_TOKEN) {
+                throw new Error('GITHUB_TOKEN was undefined');
+            }
+            const octokit = new github_1.GitHub(process.env.GITHUB_TOKEN);
             if (!process.env.GITHUB_REPOSITORY) {
                 throw new Error('GITHUB_REPOSITORY was undefined');
             }
@@ -1816,8 +1665,12 @@ function run() {
             core.debug(`Filter parsed to: ${filterResults}`);
             if (!filterResults) {
                 core.debug('Cancelling the workflow due to filter');
-                const post = bent('https://api.github.com', 'POST', 'string', 200);
-                yield post(`/repos/${owner}/${repo}/actions/runs/${github_1.context.payload.run_id}/cancel`);
+                octokit.actions.cancelWorkflowRun({
+                    owner,
+                    repo,
+                    run_id: github_1.context.payload.run_id // eslint-disable-line @typescript-eslint/camelcase
+                });
+                core.setOutput('status', 'Filter evaluated to false');
             }
             else {
                 core.setOutput('status', 'Filter evaluated to true');
@@ -3175,165 +3028,6 @@ function reportDuplicateLabels(ast) {
 }
 
 module.exports = reportDuplicateLabels;
-
-
-/***/ }),
-
-/***/ 231:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-const http = __webpack_require__(605)
-const https = __webpack_require__(34)
-const { URL } = __webpack_require__(835)
-const isStream = __webpack_require__(956)
-const caseless = __webpack_require__(972)
-const bytes = __webpack_require__(414)
-const bent = __webpack_require__(717)
-const zlib = __webpack_require__(761)
-const { PassThrough } = __webpack_require__(413)
-
-const compression = {}
-
-/* istanbul ignore else */
-if (zlib.createBrotliDecompress) compression.br = () => zlib.createBrotliDecompress()
-/* istanbul ignore else */
-if (zlib.createGunzip) compression.gzip = () => zlib.createGunzip()
-/* istanbul ignore else */
-if (zlib.createInflate) compression.deflate = () => zlib.createInflate()
-
-const acceptEncoding = Object.keys(compression).join(', ')
-
-const getResponse = resp => {
-  const ret = new PassThrough()
-  ret.statusCode = resp.statusCode
-  ret.statusMessage = resp.statusMessage
-  ret.headers = resp.headers
-  ret._response = resp
-  if (ret.headers['content-encoding']) {
-    const encodings = ret.headers['content-encoding'].split(', ').reverse()
-    while (encodings.length) {
-      const enc = encodings.shift()
-      if (compression[enc]) {
-        resp = resp.pipe(compression[enc]())
-      } else {
-        break
-      }
-    }
-  }
-  return resp.pipe(ret)
-}
-
-class StatusError extends Error {
-  constructor (res, ...params) {
-    super(...params)
-
-    Error.captureStackTrace(this, StatusError)
-    this.message = `Incorrect statusCode: ${res.statusCode}`
-    this.statusCode = res.statusCode
-    this.responseBody = new Promise((resolve) => {
-      const buffers = []
-      res.on('data', chunk => buffers.push(chunk))
-      res.on('end', () => resolve(Buffer.concat(buffers)))
-    })
-  }
-}
-
-const getBuffer = stream => new Promise((resolve, reject) => {
-  const parts = []
-  stream.on('error', reject)
-  stream.on('end', () => resolve(Buffer.concat(parts)))
-  stream.on('data', d => parts.push(d))
-})
-
-const mkrequest = (statusCodes, method, encoding, headers, baseurl) => (_url, body = null, _headers = {}) => {
-  _url = baseurl + (_url || '')
-  const parsed = new URL(_url)
-  let h
-  if (parsed.protocol === 'https:') {
-    h = https
-  } else if (parsed.protocol === 'http:') {
-    h = http
-  } else {
-    throw new Error(`Unknown protocol, ${parsed.protocol}`)
-  }
-  const request = {
-    path: parsed.pathname + parsed.search,
-    port: parsed.port,
-    method: method,
-    headers: { ...(headers || {}), ..._headers },
-    hostname: parsed.hostname
-  }
-  if (parsed.username || parsed.password) {
-    request.auth = [parsed.username, parsed.password].join(':')
-  }
-  const c = caseless(request.headers)
-  if (encoding === 'json') {
-    if (!c.get('accept')) {
-      c.set('accept', 'application/json')
-    }
-  }
-  if (!c.has('accept-encoding')) {
-    c.set('accept-encoding', acceptEncoding)
-  }
-  return new Promise((resolve, reject) => {
-    const req = h.request(request, async res => {
-      res.status = res.statusCode
-      if (!statusCodes.has(res.statusCode)) {
-        return reject(new StatusError(res))
-      }
-      res = getResponse(res)
-
-      if (!encoding) return resolve(res)
-      else {
-        const buff = await getBuffer(res)
-        /* istanbul ignore else */
-        if (encoding === 'buffer') {
-          resolve(buff)
-        } else if (encoding === 'json') {
-          let ret
-          try {
-            ret = JSON.parse(buff.toString())
-            resolve(ret)
-          } catch (e) {
-            e.message += `str"${buff.toString()}"`
-            reject(e)
-          }
-        } else if (encoding === 'string') {
-          resolve(buff.toString())
-        }
-      }
-    })
-    req.on('error', reject)
-    if (body) {
-      if (body instanceof ArrayBuffer || ArrayBuffer.isView(body)) {
-        body = bytes.native(body)
-      }
-      if (Buffer.isBuffer(body)) {
-        // noop
-      } else if (typeof body === 'string') {
-        body = Buffer.from(body)
-      } else if (isStream(body)) {
-        body.pipe(req)
-        body = null
-      } else if (typeof body === 'object') {
-        req.setHeader('content-type', 'application/json')
-        body = Buffer.from(JSON.stringify(body))
-      } else {
-        reject(new Error('Unknown body type.'))
-      }
-      if (body) {
-        req.setHeader('content-length', body.length)
-        req.end(body)
-      }
-    } else {
-      req.end()
-    }
-  })
-}
-
-module.exports = bent(mkrequest)
 
 
 /***/ }),
@@ -7942,51 +7636,6 @@ module.exports = require("stream");
 
 /***/ }),
 
-/***/ 414:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-"use strict";
-
-const crypto = __webpack_require__(417)
-const fallback = __webpack_require__(58).from
-const bytes = __webpack_require__(101)
-
-bytes.from = (_from, encoding) => {
-  if (_from instanceof DataView) return _from
-  if (_from instanceof ArrayBuffer) return new DataView(_from)
-  if (typeof _from === 'string') {
-    _from = Buffer.from(_from, encoding)
-  }
-  if (Buffer.isBuffer(_from)) {
-    return new DataView(_from.buffer, _from.byteOffset, _from.byteLength)
-  }
-  return fallback(_from, encoding)
-}
-bytes.toString = (_from, encoding) => {
-  _from = bytes(_from)
-  return Buffer.from(_from.buffer, _from.byteOffset, _from.byteLength).toString(encoding)
-}
-
-bytes.native = (_from, encoding) => {
-  if (Buffer.isBuffer(_from)) return _from
-  _from = bytes(_from, encoding)
-  return Buffer.from(_from.buffer, _from.byteOffset, _from.byteLength)
-}
-
-bytes._randomFill = crypto.randomFillSync
-
-module.exports = bytes
-
-
-/***/ }),
-
-/***/ 417:
-/***/ (function(module) {
-
-module.exports = require("crypto");
-
-/***/ }),
-
 /***/ 427:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -11817,61 +11466,6 @@ var compiler = {
 };
 
 module.exports = compiler;
-
-
-/***/ }),
-
-/***/ 717:
-/***/ (function(module) {
-
-"use strict";
-
-const encodings = new Set(['json', 'buffer', 'string'])
-
-module.exports = mkrequest => (...args) => {
-  const statusCodes = new Set()
-  let method
-  let encoding
-  let headers
-  let baseurl = ''
-
-  args.forEach(arg => {
-    if (typeof arg === 'string') {
-      if (arg.toUpperCase() === arg) {
-        if (method) {
-          const msg = `Can't set method to ${arg}, already set to ${method}.`
-          throw new Error(msg)
-        } else {
-          method = arg
-        }
-      } else if (arg.startsWith('http:') || arg.startsWith('https:')) {
-        baseurl = arg
-      } else {
-        if (encodings.has(arg)) {
-          encoding = arg
-        } else {
-          throw new Error(`Unknown encoding, ${arg}`)
-        }
-      }
-    } else if (typeof arg === 'number') {
-      statusCodes.add(arg)
-    } else if (typeof arg === 'object') {
-      if (headers) {
-        throw new Error('Cannot set headers twice.')
-      }
-      headers = arg
-    } else {
-      throw new Error(`Unknown type: ${typeof arg}`)
-    }
-  })
-
-  if (!method) method = 'GET'
-  if (statusCodes.size === 0) {
-    statusCodes.add(200)
-  }
-
-  return mkrequest(statusCodes, method, encoding, headers, baseurl)
-}
 
 
 /***/ }),
@@ -33686,43 +33280,6 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 
 /***/ }),
 
-/***/ 956:
-/***/ (function(module) {
-
-"use strict";
-
-
-const isStream = stream =>
-	stream !== null &&
-	typeof stream === 'object' &&
-	typeof stream.pipe === 'function';
-
-isStream.writable = stream =>
-	isStream(stream) &&
-	stream.writable !== false &&
-	typeof stream._write === 'function' &&
-	typeof stream._writableState === 'object';
-
-isStream.readable = stream =>
-	isStream(stream) &&
-	stream.readable !== false &&
-	typeof stream._read === 'function' &&
-	typeof stream._readableState === 'object';
-
-isStream.duplex = stream =>
-	isStream.writable(stream) &&
-	isStream.readable(stream);
-
-isStream.transform = stream =>
-	isStream.duplex(stream) &&
-	typeof stream._transform === 'function' &&
-	typeof stream._transformState === 'object';
-
-module.exports = isStream;
-
-
-/***/ }),
-
 /***/ 966:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -33826,80 +33383,6 @@ function onceStrict (fn) {
   f.onceError = name + " shouldn't be called more than once"
   f.called = false
   return f
-}
-
-
-/***/ }),
-
-/***/ 972:
-/***/ (function(module) {
-
-function Caseless (dict) {
-  this.dict = dict || {}
-}
-Caseless.prototype.set = function (name, value, clobber) {
-  if (typeof name === 'object') {
-    for (var i in name) {
-      this.set(i, name[i], value)
-    }
-  } else {
-    if (typeof clobber === 'undefined') clobber = true
-    var has = this.has(name)
-
-    if (!clobber && has) this.dict[has] = this.dict[has] + ',' + value
-    else this.dict[has || name] = value
-    return has
-  }
-}
-Caseless.prototype.has = function (name) {
-  var keys = Object.keys(this.dict)
-    , name = name.toLowerCase()
-    ;
-  for (var i=0;i<keys.length;i++) {
-    if (keys[i].toLowerCase() === name) return keys[i]
-  }
-  return false
-}
-Caseless.prototype.get = function (name) {
-  name = name.toLowerCase()
-  var result, _key
-  var headers = this.dict
-  Object.keys(headers).forEach(function (key) {
-    _key = key.toLowerCase()
-    if (name === _key) result = headers[key]
-  })
-  return result
-}
-Caseless.prototype.swap = function (name) {
-  var has = this.has(name)
-  if (has === name) return
-  if (!has) throw new Error('There is no header than matches "'+name+'"')
-  this.dict[name] = this.dict[has]
-  delete this.dict[has]
-}
-Caseless.prototype.del = function (name) {
-  var has = this.has(name)
-  return delete this.dict[has || name]
-}
-
-module.exports = function (dict) {return new Caseless(dict)}
-module.exports.httpify = function (resp, headers) {
-  var c = new Caseless(headers)
-  resp.setHeader = function (key, value, clobber) {
-    if (typeof value === 'undefined') return
-    return c.set(key, value, clobber)
-  }
-  resp.hasHeader = function (key) {
-    return c.has(key)
-  }
-  resp.getHeader = function (key) {
-    return c.get(key)
-  }
-  resp.removeHeader = function (key) {
-    return c.del(key)
-  }
-  resp.headers = c.dict
-  return c
 }
 
 

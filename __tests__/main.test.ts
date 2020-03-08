@@ -3,8 +3,8 @@ import {handleError, run} from '../src/main';
 
 describe('Main tests', () => {
   beforeEach(() => {
-    process.env.ADMIN_TOKEN = 'not-a-token';
-    process.env.GITHUB_REPOSITORY = 'ActionsDesk/invite-user';
+    process.env.GITHUB_TOKEN = 'not-a-token';
+    process.env.GITHUB_REPOSITORY = 'Chocrates/stop-action-filter';
     octomock.resetMocks();
     octomock.loadIssueLabeledContext({
       issueBody: 'Test',

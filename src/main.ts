@@ -1,8 +1,7 @@
 import * as core from '@actions/core';
-import {context} from '@actions/github';
+import {context, GitHub} from '@actions/github';
 import * as pegjs from 'pegjs';
 import * as fs from 'fs';
-import bent = require('bent'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 function handleError(error: Error): void {
   core.debug(error.message);
@@ -18,6 +17,10 @@ async function run(): Promise<void> {
   const filter: string = core.getInput('filter');
 
   try {
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error('GITHUB_TOKEN was undefined');
+    }
+    const octokit: GitHub = new GitHub(process.env.GITHUB_TOKEN);
     if (!process.env.GITHUB_REPOSITORY) {
       throw new Error('GITHUB_REPOSITORY was undefined');
     }
@@ -32,8 +35,12 @@ async function run(): Promise<void> {
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {
       core.debug('Cancelling the workflow due to filter');
-      const post = bent('https://api.github.com', 'POST', 'string', 200);
-      await post(`/repos/${owner}/${repo}/actions/runs/${context.payload.run_id}/cancel`);
+      octokit.actions.cancelWorkflowRun({
+        owner,
+        repo,
+        run_id: context.payload.run_id // eslint-disable-line @typescript-eslint/camelcase
+      });
+      core.setOutput('status', 'Filter evaluated to false');
     } else {
       core.setOutput('status', 'Filter evaluated to true');
     }
