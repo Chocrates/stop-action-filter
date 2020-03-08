@@ -3,7 +3,7 @@ on: push
 
 jobs:
   one:
-    runs-on: self-hosted
+    runs-on:  ubuntu-latest
     steps:
       - name: Dump GitHub context
         env:
