@@ -24,13 +24,13 @@ async function run(): Promise<void> {
     }
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     const payload: WebhookPayload = context.payload;
-    core.debug(JSON.stringify(payload));
+    core.debug(JSON.stringify(context));
     const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
     const finalGrammer = `{ var context = ${JSON.stringify(payload)} ${grammer}`;
 
     const parser = pegjs.generate(finalGrammer);
     const filterResults = parser.parse(filter);
-    core.debug(filter);
+    core.debug(`Filter: ${filter}`);
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {
       core.debug('Cancelling the workflow due to filter');
