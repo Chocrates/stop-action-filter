@@ -1,4 +1,5 @@
- on: push
+name: Test Workflow to dump run contexts
+on: push
 
 jobs:
   one:
