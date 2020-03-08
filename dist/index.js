@@ -1807,10 +1807,9 @@ function run() {
                 throw new Error('GITHUB_REPOSITORY was undefined');
             }
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-            const payload = github_1.context.payload;
-            core.debug(JSON.stringify(payload));
+            core.debug(JSON.stringify(github_1.context));
             const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
-            const finalGrammer = `{ var context = ${JSON.stringify(payload)} ${grammer}`;
+            const finalGrammer = `{ var context = ${JSON.stringify(github_1.context)} ${grammer}`;
             const parser = pegjs.generate(finalGrammer);
             const filterResults = parser.parse(filter);
             core.debug(`Filter: ${filter}`);
@@ -1818,7 +1817,7 @@ function run() {
             if (!filterResults) {
                 core.debug('Cancelling the workflow due to filter');
                 const post = bent('https://api.github.com', 'POST', 'string', 200);
-                yield post(`/repos/${owner}/${repo}/actions/runs/${payload.run_id}/cancel`);
+                yield post(`/repos/${owner}/${repo}/actions/runs/${github_1.context.payload.run_id}/cancel`);
             }
             else {
                 core.setOutput('status', 'Filter evaluated to true');

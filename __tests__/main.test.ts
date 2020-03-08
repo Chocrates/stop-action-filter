@@ -12,7 +12,7 @@ describe('Main tests', () => {
       issueAuthorLogin: 'devops-bot'
     });
 
-    octomock.mockFunctions.core.getInput.mockReturnValueOnce('action == "labeled"');
+    octomock.mockFunctions.core.getInput.mockReturnValueOnce('payload.action == "labeled"');
   });
 
   test('handleError', () => {
