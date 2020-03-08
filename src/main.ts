@@ -24,7 +24,7 @@ async function run(): Promise<void> {
     }
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     const payload: WebhookPayload = context.payload;
-    core.debug(JSON.stringify(context));
+    core.debug(JSON.stringify(payload));
     const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
     const finalGrammer = `{ var context = ${JSON.stringify(payload)} ${grammer}`;
 

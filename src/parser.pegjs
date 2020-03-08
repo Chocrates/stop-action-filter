@@ -4,7 +4,11 @@
 
   // Borrowed from: https://stackoverflow.com/a/2631198/298149
   function getNested(obj, ...args){ 
-    return args.reduce((obj,level) => obj && obj[level],obj)
+      let nested = args.reduce((obj,level) => obj && obj[level],obj)
+      if(!nested){
+          throw new Error(`Path not found in context ${args.join('.')}`)
+      }
+      return nested;
   }
   
   // Borrowed from: https://stackoverflow.com/a/15030117/298149

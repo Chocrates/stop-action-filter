@@ -1808,7 +1808,7 @@ function run() {
             }
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
             const payload = github_1.context.payload;
-            core.debug(JSON.stringify(github_1.context));
+            core.debug(JSON.stringify(payload));
             const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
             const finalGrammer = `{ var context = ${JSON.stringify(payload)} ${grammer}`;
             const parser = pegjs.generate(finalGrammer);
