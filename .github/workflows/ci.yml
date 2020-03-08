@@ -24,3 +24,5 @@ jobs:
     - uses: ./
       with: 
         filter: 'eventName == "push"'
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
