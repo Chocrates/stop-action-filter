@@ -2,7 +2,7 @@
   "name": "stop-action-filter",
   "version": "1.0.0",
   "description": "Stop GitHub Action if filter criteria met",
-  "main": "index.js",
+  "main": "src/main.ts",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/Chocrates/stop-action-filter#readme",
   "devDependencies": {
     "@chocrates/octomock": "^1.0.5",
+    "@types/bent": "^7.0.1",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
     "@types/pegjs": "^0.10.1",
@@ -45,6 +46,7 @@
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
+    "bent": "^7.1.1",
     "pegjs": "^0.10.0"
   },
   "husky": {

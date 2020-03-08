@@ -12,7 +12,7 @@ describe('Main tests', () => {
       issueAuthorLogin: 'devops-bot'
     });
 
-    octomock.mockFunctions.core.getInput.mockReturnValueOnce('action == "bug"');
+    octomock.mockFunctions.core.getInput.mockReturnValueOnce('action == "labeled"');
   });
 
   test('handleError', () => {
@@ -25,5 +25,6 @@ describe('Main tests', () => {
 
   test('main parses the filter', async () => {
     run();
+    expect(octomock.mockFunctions.core.setOutput).toHaveBeenCalledWith('status', 'Filter evaluated to true');
   });
 });
