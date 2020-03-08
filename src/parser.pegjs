@@ -2,8 +2,6 @@
 // Currently under construction.  Backing up in case my computer restarts
 // Parts are heavily borrowed from https://gist.github.com/daffl/878d4b60eb45e3a19e2b
 
-
-{
   // Borrowed from: https://stackoverflow.com/a/2631198/298149
   function getNested(obj, ...args){ 
     return args.reduce((obj,level) => obj && obj[level],obj)
