@@ -1658,9 +1658,8 @@ function run() {
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
             core.debug(JSON.stringify(github_1.context));
             const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
-            const finalGrammer = `{ var context = ${JSON.stringify(github_1.context)} ${grammer}`;
-            const parser = pegjs.generate(finalGrammer);
-            const filterResults = parser.parse(filter);
+            const parser = pegjs.generate(grammer);
+            const filterResults = parser.parse(filter, { context: github_1.context });
             core.debug(`Filter: ${filter}`);
             core.debug(`Filter parsed to: ${filterResults}`);
             if (!filterResults) {

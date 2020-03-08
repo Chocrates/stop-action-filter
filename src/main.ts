@@ -27,10 +27,9 @@ async function run(): Promise<void> {
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     core.debug(JSON.stringify(context));
     const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
-    const finalGrammer = `{ var context = ${JSON.stringify(context)} ${grammer}`;
 
-    const parser = pegjs.generate(finalGrammer);
-    const filterResults = parser.parse(filter);
+    const parser = pegjs.generate(grammer);
+    const filterResults = parser.parse(filter, {context});
     core.debug(`Filter: ${filter}`);
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {
