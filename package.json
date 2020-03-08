@@ -1,0 +1,25 @@
+{
+  "name": "stop-action-filter",
+  "version": "1.0.0",
+  "description": "Stop GitHub Action if filter criteria met",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --collect-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chocrates/stop-action-filter.git"
+  },
+  "author": "Chris McIntosh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Chocrates/stop-action-filter/issues"
+  },
+  "homepage": "https://github.com/Chocrates/stop-action-filter#readme",
+  "devDependencies": {
+    "@chocrates/octomock": "^1.0.5"
+  },
+  "dependencies": {
+    "pegjs": "^0.10.0"
+  }
+}
