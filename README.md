@@ -38,10 +38,26 @@ Strings are any group of text surrounded by a single or double quotes.  Anything
   
 ## Example Workflow
 * When a user opens a new `bug` leave them a comment with next steps and links to other resources to get help
-```
-name: Bug notification workflow
+```yaml
+name: Test workflow to add a comment to bugs
 on:
   issues:
-  
+    types: [labeled]
+
+jobs:
+  add-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: chocrates/stop-action-filter@master
+        with:
+          filter: 'payload.label.name == "bug"'
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      - uses: ActionsDesk/add-comment-action@release/v1
+        with:
+          message: 'Thank you for opening an issue!  I am sorry you are having troubles.  While you wait for your issue to get Triaged, please consider glancing at the documentation in the wiki: https://github.com/Chocrates/stop-action-filter/wiki'
+          stepStatus: 'success'
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 ```
   
