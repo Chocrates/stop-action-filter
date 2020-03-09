@@ -42,6 +42,14 @@ async function run(): Promise<void> {
         repo,
         run_id: runId // eslint-disable-line @typescript-eslint/camelcase
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result: any = await octokit.actions.getWorkflowRun({
+        owner,
+        repo,
+        run_id: runId // eslint-disable-line @typescript-eslint/camelcase
+      });
+      core.debug(result);
       core.setOutput('status', 'Filter evaluated to false');
     } else {
       core.setOutput('status', 'Filter evaluated to true');

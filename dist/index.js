@@ -1505,6 +1505,13 @@ function run() {
                     repo,
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase
                 });
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const result = yield octokit.actions.getWorkflowRun({
+                    owner,
+                    repo,
+                    run_id: runId // eslint-disable-line @typescript-eslint/camelcase
+                });
+                core.debug(result);
                 core.setOutput('status', 'Filter evaluated to false');
             }
             else {
