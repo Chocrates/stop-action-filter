@@ -15,5 +15,6 @@ jobs:
       - uses: ActionsDesk/add-comment-action@release/v1
         with:
           message: 'Thank you for opening an issue!  I am sorry you are having troubles.  While you wait for your issue to get Triaged, please consider glancing at the documentation in the wiki: https://github.com/Chocrates/stop-action-filter/wiki'
+          stepStatus: 'success'
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}

@@ -1469,7 +1469,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github_1 = __webpack_require__(469);
-// import * as pegjs from 'pegjs';
 const parser = __webpack_require__(188); // eslint-disable-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 function handleError(error) {
     core.debug(error.message);
@@ -1501,7 +1500,7 @@ function run() {
             core.debug(`Filter parsed to: ${filterResults}`);
             if (!filterResults) {
                 core.debug('Cancelling the workflow due to filter');
-                octokit.actions.cancelWorkflowRun({
+                yield octokit.actions.cancelWorkflowRun({
                     owner,
                     repo,
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase

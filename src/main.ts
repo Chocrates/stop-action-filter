@@ -1,6 +1,5 @@
 import * as core from '@actions/core';
 import {context, GitHub} from '@actions/github';
-// import * as pegjs from 'pegjs';
 const parser = require('./parser'); // eslint-disable-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 
 function handleError(error: Error): void {
@@ -38,7 +37,7 @@ async function run(): Promise<void> {
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {
       core.debug('Cancelling the workflow due to filter');
-      octokit.actions.cancelWorkflowRun({
+      await octokit.actions.cancelWorkflowRun({
         owner,
         repo,
         run_id: runId // eslint-disable-line @typescript-eslint/camelcase

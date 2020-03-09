@@ -1,3 +1,6 @@
+# parser.js is compiled, we don't want to accidentally commit it
+src/parser.js
+
 # comment this out distribution branches
 node_modules/
 

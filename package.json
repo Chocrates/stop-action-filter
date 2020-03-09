@@ -29,7 +29,7 @@
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
     "@types/pegjs": "^0.10.1",
-    "@typescript-eslint/parser": "^2.8.0",
+    "@typescript-eslint/parser": "^2.23.0",
     "@zeit/ncc": "^0.20.5",
     "eslint": "^5.16.0",
     "eslint-plugin-github": "^2.0.0",
@@ -39,15 +39,14 @@
     "jest-circus": "^24.9.0",
     "js-yaml": "^3.13.1",
     "lint-staged": "^10.0.7",
+    "pegjs": "^0.10.0",
     "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
     "typescript": "^3.6.4"
   },
   "dependencies": {
     "@actions/core": "^1.2.3",
-    "@actions/github": "^2.1.1",
-    "bent": "^7.1.1",
-    "pegjs": "^0.10.0"
+    "@actions/github": "^2.1.1"
   },
   "husky": {
     "hooks": {
