@@ -5,6 +5,7 @@ describe('Main tests', () => {
   beforeEach(() => {
     process.env.GITHUB_TOKEN = 'not-a-token';
     process.env.GITHUB_REPOSITORY = 'Chocrates/stop-action-filter';
+    process.env.GITHUB_RUN_ID = '1';
     octomock.resetMocks();
     octomock.loadIssueLabeledContext({
       issueBody: 'Test',

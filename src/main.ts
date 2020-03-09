@@ -24,6 +24,11 @@ async function run(): Promise<void> {
     if (!process.env.GITHUB_REPOSITORY) {
       throw new Error('GITHUB_REPOSITORY was undefined');
     }
+
+    if (!process.env.GITHUB_RUN_ID) {
+      throw new Error('GITHUB_RUN_ID was undefined');
+    }
+    const runId: number = parseInt(process.env.GITHUB_RUN_ID);
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     core.debug(JSON.stringify(context));
     const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
@@ -37,7 +42,7 @@ async function run(): Promise<void> {
       octokit.actions.cancelWorkflowRun({
         owner,
         repo,
-        run_id: context.payload.run_id // eslint-disable-line @typescript-eslint/camelcase
+        run_id: runId // eslint-disable-line @typescript-eslint/camelcase
       });
       core.setOutput('status', 'Filter evaluated to false');
     } else {
