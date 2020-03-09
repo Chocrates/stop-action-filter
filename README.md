@@ -60,4 +60,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 ```
-  
+
+## Contributing
+Please submit PR's for patches you would like to see merged into the mainline.  If you have any questions or would like some help with please open an issue.  When submitting PR's please make sure you have added tests covering the new functionality.  
+
+
+## License
+All code and documentation are released under the [MIT License](LICENSE)
