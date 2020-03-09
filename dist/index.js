@@ -1505,20 +1505,8 @@ function run() {
                     repo,
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase
                 });
-                const status = () => __awaiter(this, void 0, void 0, function* () {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const result = yield octokit.actions.getWorkflowRun({
-                        owner,
-                        repo,
-                        run_id: runId // eslint-disable-line @typescript-eslint/camelcase
-                    });
-                    core.debug(JSON.stringify(result));
-                    core.debug('Sleeping');
-                    return result;
-                });
-                for (let i = 0; i < 10; i++) {
-                    setTimeout(status, 30000);
-                }
+                // In practice the cancelWorkflowRun API call succeeds in cancelling the job, but it still moves on to the next step.  Sleeping here should ensure that by the time we decide if we want to run the next step we are synced
+                setTimeout(() => { }, 1000);
                 core.setOutput('status', 'Filter evaluated to false');
             }
             else {

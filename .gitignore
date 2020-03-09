@@ -1,6 +1,9 @@
 # parser.js is compiled, we don't want to accidentally commit it
 src/parser.js
 
+# lib is generated as part of the build but ultimately ignored so we don't want to accidentally check it in
+lib/
+
 # comment this out distribution branches
 node_modules/
 
