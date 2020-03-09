@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import {context, GitHub} from '@actions/github';
-import * as pegjs from 'pegjs';
-import * as fs from 'fs';
+// import * as pegjs from 'pegjs';
+const parser = require('./parser'); // eslint-disable-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
 
 function handleError(error: Error): void {
   core.debug(error.message);
@@ -31,9 +31,7 @@ async function run(): Promise<void> {
     const runId: number = parseInt(process.env.GITHUB_RUN_ID);
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     core.debug(JSON.stringify(context));
-    const grammer = fs.readFileSync('src/parser.pegjs', 'utf-8');
 
-    const parser = pegjs.generate(grammer);
     const filterResults = parser.parse(filter, {context});
 
     core.debug(`Filter: ${filter}`);

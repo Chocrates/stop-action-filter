@@ -4,12 +4,12 @@
   "description": "Stop GitHub Action if filter criteria met",
   "main": "src/main.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && pegjs src/parser.pegjs",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
-    "test": "jest --collect-coverage",
+    "test": "npm build && jest --collect-coverage",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
   },
