@@ -2,18 +2,20 @@
 import {handleError, run} from '../src/main';
 
 describe('Main tests', () => {
+  const owner = 'Chocrates';
+  const repo = 'stop-action-filter';
+  const runId = 1;
+
   beforeEach(() => {
     process.env.GITHUB_TOKEN = 'not-a-token';
-    process.env.GITHUB_REPOSITORY = 'Chocrates/stop-action-filter';
-    process.env.GITHUB_RUN_ID = '1';
+    process.env.GITHUB_REPOSITORY = `${owner}/${repo}`;
+    process.env.GITHUB_RUN_ID = `${runId}`;
     octomock.resetMocks();
     octomock.loadIssueLabeledContext({
       issueBody: 'Test',
       issueNumber: 1,
       issueAuthorLogin: 'devops-bot'
     });
-
-    octomock.mockFunctions.core.getInput.mockReturnValueOnce('payload.action == "labeled"');
   });
 
   test('handleError', () => {
@@ -24,8 +26,20 @@ describe('Main tests', () => {
     expect(octomock.mockFunctions.core.setFailed).toBeCalledTimes(1);
   });
 
-  test('main parses the filter', async () => {
+  test('main parses the filter to true and exits', async () => {
+    octomock.mockFunctions.core.getInput.mockReturnValueOnce('payload.action == "labeled"');
     run();
     expect(octomock.mockFunctions.core.setOutput).toHaveBeenCalledWith('status', 'Filter evaluated to true');
+  });
+
+  test('main parses the filter to false and cancels the workflow', async () => {
+    octomock.mockFunctions.core.getInput.mockReturnValueOnce('payload.action == "bug"');
+    run();
+    expect(octomock.mockFunctions.actions.cancelWorkflowRun).toHaveBeenCalledWith({
+      owner,
+      repo,
+      run_id: runId
+    });
+    expect(octomock.mockFunctions.core.setOutput).toHaveBeenCalledWith('status', 'Filter evaluated to false');
   });
 });

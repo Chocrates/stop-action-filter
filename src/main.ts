@@ -35,6 +35,7 @@ async function run(): Promise<void> {
 
     const parser = pegjs.generate(grammer);
     const filterResults = parser.parse(filter, {context});
+    debugger;
     core.debug(`Filter: ${filter}`);
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {

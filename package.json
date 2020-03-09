@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Chocrates/stop-action-filter#readme",
   "devDependencies": {
-    "@chocrates/octomock": "^1.0.5",
+    "@chocrates/octomock": "^1.1.1",
     "@types/bent": "^7.0.1",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
