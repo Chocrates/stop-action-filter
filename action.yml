@@ -1,5 +1,5 @@
 name: 'Stop Action Filter'
-description: 'Stops the workflow run if your filter clause evaluates to false.  Useful for filtering your actions when you only care about a small subset of events (say a certain label on a created issue) rather than having to embed if statements in each line'
+description: 'Stops the workflow run if your filter clause evaluates to false'
 author: 'Chris McIntosh'
 inputs:
   FILTER:

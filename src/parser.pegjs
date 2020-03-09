@@ -55,7 +55,7 @@ expr
     } else if(expr === 'in'){ 
       result = rhs.indexOf(lhs) > -1;
     } else {
-      return "fuck"
+      throw new Error(`Unknown express ${expr}`)
     }
     if(negate){
       result = !result;
