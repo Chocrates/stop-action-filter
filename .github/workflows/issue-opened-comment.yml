@@ -1,0 +1,18 @@
+name: Test workflow to add a comment to bugs
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  add-comment:
+    steps:
+      - uses: chocrates/stop-action-filter@master
+        with:
+          filter: 'payload.label.name == "bug"'
+        env:
+          GITHUB_TOKEN ${{ secrets.TOKEN }}
+     - uses: ActionsDesk/add-comment-action@release/v1
+       with:
+         message: `Thank you for opening an issue!  I am sorry you are having troubles.  While you wait for your issue to get Triaged, please consider glancing at the documentation in the wiki: https://github.com/Chocrates/stop-action-filter/wiki'
+       env:
+         GITHUB_TOKEN: ${{ secrets.TOKEN }}
