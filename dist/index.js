@@ -1506,7 +1506,9 @@ function run() {
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase
                 });
                 // In practice the cancelWorkflowRun API call succeeds in cancelling the job, but it still moves on to the next step.  Sleeping here should ensure that by the time we decide if we want to run the next step we are synced
-                setTimeout(() => { }, 1000);
+                setTimeout(() => {
+                    core.debug('Sleeping to ensure the steps are synced');
+                }, 10000);
                 core.setOutput('status', 'Filter evaluated to false');
             }
             else {
