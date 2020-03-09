@@ -1511,7 +1511,7 @@ function run() {
                     repo,
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase
                 });
-                core.debug(result);
+                core.debug(JSON.stringify(result));
                 core.setOutput('status', 'Filter evaluated to false');
             }
             else {

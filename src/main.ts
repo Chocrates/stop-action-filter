@@ -49,7 +49,7 @@ async function run(): Promise<void> {
         repo,
         run_id: runId // eslint-disable-line @typescript-eslint/camelcase
       });
-      core.debug(result);
+      core.debug(JSON.stringify(result));
       core.setOutput('status', 'Filter evaluated to false');
     } else {
       core.setOutput('status', 'Filter evaluated to true');
