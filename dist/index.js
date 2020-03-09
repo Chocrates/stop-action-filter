@@ -1505,13 +1505,20 @@ function run() {
                     repo,
                     run_id: runId // eslint-disable-line @typescript-eslint/camelcase
                 });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const result = yield octokit.actions.getWorkflowRun({
-                    owner,
-                    repo,
-                    run_id: runId // eslint-disable-line @typescript-eslint/camelcase
+                const status = () => __awaiter(this, void 0, void 0, function* () {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const result = yield octokit.actions.getWorkflowRun({
+                        owner,
+                        repo,
+                        run_id: runId // eslint-disable-line @typescript-eslint/camelcase
+                    });
+                    core.debug(JSON.stringify(result));
+                    core.debug('Sleeping');
+                    return result;
                 });
-                core.debug(JSON.stringify(result));
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(status, 30000);
+                }
                 core.setOutput('status', 'Filter evaluated to false');
             }
             else {
