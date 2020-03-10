@@ -2106,10 +2106,14 @@ function peg$parse(input, options) {
             var result = head;
             
             for(var i = 0; i < tail.length; i++){
-              var filtered = flatten(tail[i]).filter( el => { return el && el !== ' ' } );
+              var filtered = flatten(tail[i]).filter( el => { return el && el !== ' ' || typeof el === 'boolean' } );
               console.log(filtered)
               if(filtered[0] === '||'){
                 result = result || filtered[1];
+              } else if(filtered[0] === '&&'){
+                result = result && filtered[1];
+              } else {
+                throw new Error(`Unknown operand ${result[0]}`);
               }
             }
             return result;

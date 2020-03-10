@@ -29,4 +29,29 @@ describe('Parser tests', () => {
     const filter = 'payload.issue.labels in ["notbug"]';
     expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(false);
   });
+
+  test('Command && Command evaluates to true', () => {
+    const filter = '"one" == "one" && "two" == "two"';
+    expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(true);
+  });
+
+  test('Command && Command evaluates to false', () => {
+    const filter = '"one" == "one" && "two" == "true"';
+    expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(false);
+  });
+
+  test('true || false evaluates to true', () => {
+    const filter = '"one" == "one" || "two" == "true"';
+    expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(true);
+  });
+
+  test('false || true evaluates to true', () => {
+    const filter = '"one" == "true" || "two" == "two"';
+    expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(true);
+  });
+
+  test('false || false evaluates to false', () => {
+    const filter = '"one" == "true" || "two" == "true"';
+    expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(false);
+  });
 });
