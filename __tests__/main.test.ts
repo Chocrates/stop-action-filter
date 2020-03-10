@@ -44,4 +44,10 @@ describe('Main tests', () => {
     expect(octomock.mockFunctions.core.setFailed).toHaveBeenCalledTimes(0);
     expect(octomock.mockFunctions.core.setOutput).toHaveBeenCalledWith('status', 'Filter evaluated to false');
   });
+
+  test('main parses the filter to true for the label object and exits', async () => {
+    octomock.mockFunctions.core.getInput.mockReturnValueOnce('payload.issue.labels in ["bug"]');
+    await run();
+    expect(octomock.mockFunctions.core.setOutput).toHaveBeenCalledWith('status', 'Filter evaluated to true');
+  });
 });

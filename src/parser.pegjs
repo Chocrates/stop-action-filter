@@ -52,8 +52,14 @@ expr
       result = lhs <= rhs;
     } else if(expr === '=='){ 
       result = lhs === rhs;
-    } else if(expr === 'in'){ 
-      result = rhs.indexOf(lhs) > -1;
+    } else if(expr === 'in'){
+        if(lhs instanceof Object && 'name' in lhs[0]){
+            result = lhs.map(label => { return label.name }).filter( value => -1 !== rhs.indexOf(value)).length > 0
+        } else if(rhs instanceof Object && 'name' in rhs[0]){
+            result = rhs.map(label => { return label.name }).filter( value => -1 !== lhs.indexOf(value)).length > 0
+        }else {
+            result = rhs.indexOf(lhs) > -1;
+        }
     } else {
       throw new Error(`Unknown express ${expr}`)
     }
