@@ -8,6 +8,7 @@ describe('Main tests', () => {
 
   beforeEach(() => {
     octomock.resetMocks();
+    jest.useFakeTimers();
     process.env.GITHUB_TOKEN = 'not-a-token';
     process.env.GITHUB_REPOSITORY = `${owner}/${repo}`;
     process.env.GITHUB_RUN_ID = `${runId}`;

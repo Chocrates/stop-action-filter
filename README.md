@@ -29,6 +29,11 @@ Paths use the standard javascript dot notation, so to get the issue number of an
 ### Strings 
 Strings are any group of text surrounded by a single or double quotes.  Anything else will be assumed to be a path
 
+### In expressions
+`in` lets you validate that a property is one of a list of strings like so `payload.label.name in ['bug','documentation']`.  
+Temporarily we also will check the `labels` object for their names, so if you want to make sure that your issue is labeled with a certain label, you can write a filter like this `payload.issue.labels in ["bug","documentation"]`  This is will be further fleshed out once we implement full object comparison.
+
+
 ###  Example Filters
 * Filter the issue `labeled` event to only `bug` or `question`  
   * `payload.label.name in [ 'bug', 'question' ]`
@@ -50,7 +55,7 @@ jobs:
     steps:
       - uses: chocrates/stop-action-filter@master
         with:
-          filter: 'payload.label.name == "bug"'
+          filter: 'payload.issue.labels in ["bug"]'
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
       - uses: ActionsDesk/add-comment-action@release/v1

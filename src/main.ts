@@ -31,9 +31,7 @@ async function run(): Promise<void> {
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
     //core.debug(JSON.stringify(context));
 
-    (context as any).debug = core.debug;
     const filterResults = parser.parse(filter, {context});
-    debugger;
     core.debug(`Filter: ${filter}`);
     core.debug(`Filter parsed to: ${filterResults}`);
     if (!filterResults) {

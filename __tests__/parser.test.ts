@@ -22,7 +22,6 @@ describe('Parser tests', () => {
 
   test('Labels in ["label"] evaluates to true', () => {
     const filter = 'payload.issue.labels in ["bug"]';
-    console.log(JSON.stringify(octomock.getContext()));
     expect(parser.parse(filter, {context: octomock.getContext()})).toEqual(true);
   });
 

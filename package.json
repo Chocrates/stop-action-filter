@@ -9,7 +9,7 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
-    "test": "npm build && jest --collect-coverage",
+    "test": "npm run build && jest --collect-coverage",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
   },

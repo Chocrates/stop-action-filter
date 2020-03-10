@@ -1494,7 +1494,7 @@ function run() {
             }
             const runId = parseInt(process.env.GITHUB_RUN_ID);
             const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-            core.debug(JSON.stringify(github_1.context));
+            //core.debug(JSON.stringify(context));
             const filterResults = parser.parse(filter, { context: github_1.context });
             core.debug(`Filter: ${filter}`);
             core.debug(`Filter parsed to: ${filterResults}`);
@@ -2128,10 +2128,16 @@ function peg$parse(input, options) {
             result = lhs <= rhs;
           } else if(expr === '=='){ 
             result = lhs === rhs;
-          } else if(expr === 'in'){ 
-            result = rhs.indexOf(lhs) > -1;
+          } else if(expr === 'in'){
+              if(lhs instanceof Object && 'name' in lhs[0]){
+                  result = lhs.map(label => { return label.name }).filter( value => -1 !== rhs.indexOf(value)).length > 0
+              } else if(rhs instanceof Object && 'name' in rhs[0]){
+                  result = rhs.map(label => { return label.name }).filter( value => -1 !== lhs.indexOf(value)).length > 0
+              }else {
+                  result = rhs.indexOf(lhs) > -1;
+              }
           } else {
-            return "fuck"
+            throw new Error(`Unknown express ${expr}`)
           }
           if(negate){
             result = !result;
